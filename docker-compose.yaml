@@ -6,7 +6,7 @@ services:
         container_name: app
         entrypoint: dockerize -template .docker/app/.env:.env -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
         tty: true
-        environment: 
+        environment:
             - DB_HOST=db
             - DB_DATABASE=laravel
             - DB_USERNAME=root
@@ -15,7 +15,7 @@ services:
             - .:/var/www
         networks:
             - app-networks
-        depends_on: 
+        depends_on:
             - db
             - redis
     nginx:
@@ -23,7 +23,7 @@ services:
         container_name: nginx
         entrypoint: dockerize -template /etc/nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf nginx -g "daemon off;"
         tty: true
-        environment: 
+        environment:
             - PHP_FPM_HOST=app
             - PHP_FPM_PORT=9000
         ports:
@@ -32,7 +32,7 @@ services:
             - .:/var/www
         networks:
             - app-networks
-        depends_on: 
+        depends_on:
             - app
     redis:
         image: redis:alpine
@@ -44,15 +44,15 @@ services:
         image: mysql:5.7
         command: --innodb-use-native-aio=0
         container_name: db
-        ports: 
+        ports:
             - "3306:3306"
         volumes:
             - ./.docker/dbdata:/var/lib/mysql
-        environment: 
+        environment:
             - MYSQL_DATABASE=laravel
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_USER=root
-        networks: 
+        networks:
             - app-networks
 
 networks:
