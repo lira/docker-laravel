@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+    app:
+        build: .
+        container_name: app
+        tty: true
+        volumes:
+            - .:/var/www
+        networks:
+            - app-networks
+        depends_on: 
+            - db
+            - redis
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        entrypoint: dockerize -template /etc/nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf nginx -g "daemon off;"
+        tty: true
+        environment: 
+            - PHP_FPM_HOST=app
+            - PHP_FPM_PORT=9000
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-networks
+        depends_on: 
+            - app
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-networks
+    db:
+        image: mysql:5.7
+        command: --innodb-use-native-aio=0
+        container_name: db
+        ports: 
+            - "3306:3306"
+        volumes:
+            - ./.docker/dbdata:/var/lib/mysql
+        environment: 
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks: 
+            - app-networks
+
+networks:
+    app-networks:
+        driver: bridge
