@@ -1,46 +1,19 @@
-FROM php:7.4-fpm-alpine as builder
+FROM php:7.4-fpm-alpine
 
 WORKDIR /var/www
 
-RUN apk add bash mysql-client openssl nodejs npm
+RUN apk add --no-cache mysql-client openssl nodejs npm
 
 RUN docker-php-ext-install pdo pdo_mysql
-
-RUN apk add --no-cache openssl
-
-ENV DOCKERIZE_VERSION v0.6.1
-
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN curl -sS https://getcomposer.org/installer | php -- \
 --install-dir=/usr/bin --filename=composer
 
 RUN rm -rf /var/www/html
 
-COPY . /var/www
-
-RUN composer install && \
-     php artisan key:generate && \
-     php artisan config:cache && \
-    chmod -R 777 storage
-
-RUN npm install
-
 RUN ln -s public html
 
-FROM php:7.4-fpm-alpine
-
-WORKDIR /var/www
-
-RUN apk add --no-cache mysql-client
-
-RUN docker-php-ext-install pdo pdo_mysql
-
-RUN rm -rf /var/www/html
-
-COPY --from=builder /var/www .
+COPY . /var/www
 
 EXPOSE 9000
 
