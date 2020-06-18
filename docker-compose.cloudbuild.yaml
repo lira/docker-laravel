@@ -4,7 +4,7 @@ services:
     app:
         build:
           context: .
-          dockerfile: Dockerfile.prd
+          dockerfile: Dockerfile.prod
         container_name: app
         volumes:
             - .:/var/www

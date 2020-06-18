@@ -14,11 +14,7 @@ spec:
       containers:
       - name: nginx
         image: nginx:alpine
-        command: ["/binh", "-c", "touch /usr/share/nginx/html/index.php; nginx -g 'daemon off;'"]
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+        command: ["/bin/sh", "-c", "touch /usr/share/nginx/html/index.php; nginx -g 'daemon off;'"]
         ports:
         - containerPort: 80
         volumeMounts:
