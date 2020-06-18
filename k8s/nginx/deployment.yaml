@@ -14,6 +14,7 @@ spec:
       containers:
       - name: nginx
         image: nginx:alpine
+        command: ["/binh", "-c", "touch /usr/share/nginx/html/index.php; nginx -g 'daemon off;'"]
         resources:
           limits:
             memory: "128Mi"
