@@ -2,14 +2,15 @@ version: '3'
 
 services:
     app:
-        build: .
+        build:
+          context: .
+          dockerfile: Dockerfile.prd
         container_name: app
-        tty: true
         volumes:
             - .:/var/www
         networks:
             - app-networks
-        depends_on: 
+        depends_on:
             - db
             - redis
     nginx:
@@ -22,7 +23,7 @@ services:
             - .:/var/www
         networks:
             - app-networks
-        depends_on: 
+        depends_on:
             - app
     redis:
         image: redis:alpine
@@ -34,15 +35,16 @@ services:
         image: mysql:5.7
         command: --innodb-use-native-aio=0
         container_name: db
-        ports: 
+        tty: true
+        ports:
             - "3306:3306"
         volumes:
             - ./.docker/dbdata:/var/lib/mysql
-        environment: 
+        environment:
             - MYSQL_DATABASE=laravel
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_USER=root
-        networks: 
+        networks:
             - app-networks
 
 networks:
