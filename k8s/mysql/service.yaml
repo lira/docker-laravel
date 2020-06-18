@@ -4,7 +4,7 @@ metadata:
   name: mysql-service
 spec:
   selector:
-    app: mysql-service
+    app: mysql-server
     tier: db
   ports:
   - port: 3306
