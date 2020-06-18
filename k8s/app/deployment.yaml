@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: img-app-deployment
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        envFrom:
+        - configMapRef:
+            name: app-conf
+        volumeMounts:
+        - mountPath: /var/www/.env
+          name: app-conf
+          subPath: .env
+      volumes:
+      - name: app-conf
+        configMap:
+            name: app-conf
+            items:
+            - key: env
+              path: .env
+

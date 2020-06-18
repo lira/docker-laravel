@@ -1,0 +1,24 @@
+FROM php:7.4-fpm-alpine
+
+WORKDIR /var/www
+
+RUN apk add --no-cache mysql-client openssl nodejs npm
+
+RUN docker-php-ext-install pdo pdo_mysql
+
+RUN curl -sS https://getcomposer.org/installer | php -- \
+--install-dir=/usr/bin --filename=composer
+
+RUN rm -rf /var/www/html
+
+COPY . /var/www
+
+RUN composer install && \
+    php artisan config:cache && \
+    chmod -R 777 storage
+
+RUN ln -s public html
+
+EXPOSE 9000
+
+ENTRYPOINT ["php-fpm"]
